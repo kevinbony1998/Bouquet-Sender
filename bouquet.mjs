@@ -20,7 +20,7 @@ function pickFlowers() {
   }
 
   // Pick 2-4 unique flower types
-  const numTypes = randomInt(2, 4);
+  const numTypes = 4;
   const shuffled = pool.filter((v, i, a) => a.indexOf(v) === i) // dedupe
     .sort(() => Math.random() - 0.5)
     .slice(0, numTypes);
