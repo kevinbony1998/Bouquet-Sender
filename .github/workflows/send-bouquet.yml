@@ -5,7 +5,7 @@ on:
     - cron: '0 13 * * *'   # 8AM ET (UTC-5)
     - cron: '0 17 * * *'   # 12PM ET (UTC-5)
     - cron: '0 0 * * *'    # 7PM ET (UTC-5)
-  workflow_dispatch:        # manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   send:
@@ -15,4 +15,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - run: npm install
       - run: node bouquet.mjs
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_TO: ${{ secrets.TWILIO_TO }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
