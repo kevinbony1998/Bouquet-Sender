@@ -109,7 +109,7 @@ const message  = await getCustomMessage();
 const shareUrl = await createBouquet({
   flowers: pickFlowers(),
   flowerOrder: pickArrangement(),
-  greenery: randomInt(0, 3),
+  greenery: 0,
   sender: "Walter Mitty",
   recipient: "Sreelu",
   message
