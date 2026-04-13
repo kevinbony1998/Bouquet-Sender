@@ -7,7 +7,31 @@ const TWILIO_FROM        = "whatsapp:+14155238886";
 const TWILIO_TO          = process.env.TWILIO_TO;
 const SERVER_URL         = process.env.SERVER_URL;
 
-const DEFAULT_MESSAGE    = "Remember to eat on time!";
+const DEFAULT_MESSAGE    = "Thinking of you!";
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pickFlowers() {
+  const pool = [];
+  for (let id = 1; id <= 12; id++) {
+    const weight = (id === 2 || id === 5) ? 3 : 1;
+    for (let i = 0; i < weight; i++) pool.push(id);
+  }
+  const id = pool[Math.floor(Math.random() * pool.length)];
+  const count = randomInt(6, 10);
+  return [{ id, count }];
+}
+
+function pickArrangement() {
+  const order = [0, 1, 2, 3, 4, 5, 6];
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
 
 function generateShortId(length = 8) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -24,7 +48,7 @@ async function getCustomMessage() {
   }
 }
 
-async function createBouquet({ flowers, flowerOrder, greenery = 0, sender = "", recipient = "", message = "" }) {
+async function createBouquet({ flowers, flowerOrder, greenery, sender, recipient, message }) {
   const url = new URL(`${SUPABASE_URL}/rest/v1/bouquets`);
   url.searchParams.set("columns", '"short_id","mode","flowers","letter","timestamp","greenery","flowerOrder"');
   url.searchParams.set("select", "*");
@@ -81,11 +105,12 @@ async function sendWhatsApp(body) {
   console.log("WhatsApp message sent!");
 }
 
+// --- Run ---
 const message  = await getCustomMessage();
 const shareUrl = await createBouquet({
-  flowers: [{ id: 2, count: 7 }],
-  flowerOrder: [6, 5, 4, 0, 2, 1, 3],
-  greenery: 0,
+  flowers: pickFlowers(),
+  flowerOrder: pickArrangement(),
+  greenery: randomInt(0, 3),
   sender: "Walter Mitty",
   recipient: "Sreelu",
   message
