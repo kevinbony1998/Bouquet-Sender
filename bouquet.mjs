@@ -1,19 +1,24 @@
 const SUPABASE_URL = "https://mfpgiwrnekanudelowcy.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mcGdpd3JuZWthbnVkZWxvd2N5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwMzUxMTIsImV4cCI6MjA2OTYxMTExMn0.AEJkTniZT97oWpg32rANC32AeJKLEZ6DUOunfOBOX2o";
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-async function createBouquet({ shortId, flowers, flowerOrder, greenery = 0, sender = "", recipient = "", message = "" }) {
+function generateShortId(length = 8) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
+async function createBouquet({ flowers, flowerOrder, greenery = 0, sender = "", recipient = "", message = "" }) {
   const url = new URL(`${SUPABASE_URL}/rest/v1/bouquets`);
   url.searchParams.set("columns", '"short_id","mode","flowers","letter","timestamp","greenery","flowerOrder"');
   url.searchParams.set("select", "*");
 
   const payload = [{
-    short_id: shortId,
+    short_id: generateShortId(),
     mode: "color",
-    flowers,         // e.g. [{ id: 2, count: 7 }]
+    flowers,
     letter: { sender, recipient, message },
     timestamp: Date.now(),
     greenery,
-    flowerOrder      // e.g. [6, 5, 4, 0, 2, 1, 3]
+    flowerOrder
   }];
 
   const response = await fetch(url.toString(), {
@@ -35,20 +40,11 @@ async function createBouquet({ shortId, flowers, flowerOrder, greenery = 0, send
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
 
   const [bouquet] = await response.json();
-  return {
-    bouquet,
-    shareUrl: `https://digibouquet.vercel.app/bouquet/${bouquet.short_id}`
-  };
+  return `https://digibouquet.vercel.app/bouquet/${bouquet.short_id}`;
 }
 
-// --- Example usage ---
-function generateShortId(length = 8) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-}
-
-const result = await createBouquet({
-  shortId: generateShortId(),
+// --- Configure your bouquet here ---
+const shareUrl = await createBouquet({
   flowers: [{ id: 2, count: 7 }],
   flowerOrder: [6, 5, 4, 0, 2, 1, 3],
   greenery: 0,
@@ -57,5 +53,4 @@ const result = await createBouquet({
   message: "Thinking of you!"
 });
 
-console.log("Share URL:", result.shareUrl);
-console.log("Full response:", result.bouquet);
+console.log("Bouquet created:", shareUrl);
