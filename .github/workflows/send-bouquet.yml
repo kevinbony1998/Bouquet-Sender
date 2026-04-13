@@ -2,9 +2,9 @@ name: Send Bouquet
 
 on:
   schedule:
-    - cron: '0 13 * * *'   # 8AM ET (UTC-5)
-    - cron: '0 17 * * *'   # 12PM ET (UTC-5)
-    - cron: '0 0 * * *'    # 7PM ET (UTC-5)
+    - cron: '0 12 * * *'   # 8AM EDT (UTC-4)
+    - cron: '0 16 * * *'   # 12PM EDT (UTC-4)
+    - cron: '0 23 * * *'   # 7PM EDT (UTC-4)
   workflow_dispatch:
 
 jobs:
