@@ -40,7 +40,7 @@ async function createBouquet({ flowers, flowerOrder, greenery = 0, sender = "", 
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
 
   const [bouquet] = await response.json();
-  return `https://digibouquet.vercel.app/bouquet/${bouquet.short_id}`;
+  return `https://digibouquet.vercel.app/bouquet/${bouquet.id}`;
 }
 
 // --- Configure your bouquet here ---
