@@ -15,7 +15,7 @@ function pickFlowers() {
   // Build a weighted pool: ids 2 and 5 appear 3x, others appear 1x
   const pool = [];
   for (let id = 1; id <= 12; id++) {
-    const weight = (id === 2 || id === 5) ? 3 : 1;
+    const weight = (id === 2 || id === 5) ? 1.5 : 1;
     for (let i = 0; i < weight; i++) pool.push(id);
   }
 
@@ -26,7 +26,11 @@ function pickFlowers() {
     .slice(0, numTypes);
 
   // Assign a random count to each type
-  return shuffled.map(id => ({ id, count: randomInt(6, 10) }));
+  const total = randomInt(6, 10);
+  const counts = shuffled.map((_, i) => i === shuffled.length - 1 ? 0 : randomInt(1, total - shuffled.length + 1));
+  const remaining = total - counts.reduce((a, b) => a + b, 0);
+  counts[counts.length - 1] = remaining;
+  return shuffled.map((id, i) => ({ id, count: Math.max(1, counts[i]) }));
 }
 
 function pickArrangement() {
