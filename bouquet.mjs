@@ -1,27 +1,32 @@
 const SUPABASE_URL = "https://mfpgiwrnekanudelowcy.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mcGdpd3JuZWthbnVkZWxvd2N5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwMzUxMTIsImV4cCI6MjA2OTYxMTExMn0.AEJkTniZT97oWpg32rANC32AeJKLEZ6DUOunfOBOX2o";
-
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN  = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_FROM        = "whatsapp:+14155238886";
 const TWILIO_TO          = process.env.TWILIO_TO;
 const SERVER_URL         = process.env.SERVER_URL;
-
-const DEFAULT_MESSAGE    = "Thinking of you!";
+const DEFAULT_MESSAGE    = "Remember to eat on time!";
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function pickFlowers() {
+  // Build a weighted pool: ids 2 and 5 appear 3x, others appear 1x
   const pool = [];
   for (let id = 1; id <= 12; id++) {
-    const weight = (id === 2 || id === 5) ? 1.5 : 1;
+    const weight = (id === 2 || id === 5) ? 3 : 1;
     for (let i = 0; i < weight; i++) pool.push(id);
   }
-  const id = pool[Math.floor(Math.random() * pool.length)];
-  const count = randomInt(6, 10);
-  return [{ id, count }];
+
+  // Pick 2-4 unique flower types
+  const numTypes = randomInt(2, 4);
+  const shuffled = pool.filter((v, i, a) => a.indexOf(v) === i) // dedupe
+    .sort(() => Math.random() - 0.5)
+    .slice(0, numTypes);
+
+  // Assign a random count to each type
+  return shuffled.map(id => ({ id, count: randomInt(6, 10) }));
 }
 
 function pickArrangement() {
@@ -52,7 +57,6 @@ async function createBouquet({ flowers, flowerOrder, greenery, sender, recipient
   const url = new URL(`${SUPABASE_URL}/rest/v1/bouquets`);
   url.searchParams.set("columns", '"short_id","mode","flowers","letter","timestamp","greenery","flowerOrder"');
   url.searchParams.set("select", "*");
-
   const payload = [{
     short_id: generateShortId(),
     mode: "color",
@@ -62,7 +66,6 @@ async function createBouquet({ flowers, flowerOrder, greenery, sender, recipient
     greenery,
     flowerOrder
   }];
-
   const response = await fetch(url.toString(), {
     method: "POST",
     headers: {
@@ -78,16 +81,13 @@ async function createBouquet({ flowers, flowerOrder, greenery, sender, recipient
     },
     body: JSON.stringify(payload)
   });
-
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-
   const [bouquet] = await response.json();
   return `https://digibouquet.vercel.app/bouquet/${bouquet.id}`;
 }
 
 async function sendWhatsApp(body) {
   const credentials = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
-
   const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`, {
     method: "POST",
     headers: {
@@ -100,7 +100,6 @@ async function sendWhatsApp(body) {
       Body: body
     })
   });
-
   if (!response.ok) throw new Error(`Twilio error: ${await response.text()}`);
   console.log("WhatsApp message sent!");
 }
@@ -115,6 +114,5 @@ const shareUrl = await createBouquet({
   recipient: "Sreelu",
   message
 });
-
 console.log("Bouquet created:", shareUrl);
 await sendWhatsApp(`🌸 Your bouquet is ready!\n\n${shareUrl}`);
