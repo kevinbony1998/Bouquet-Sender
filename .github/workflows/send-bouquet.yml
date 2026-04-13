@@ -1,0 +1,18 @@
+name: Send Bouquet
+
+on:
+  schedule:
+    - cron: '0 13 * * *'   # 8AM ET (UTC-5)
+    - cron: '0 17 * * *'   # 12PM ET (UTC-5)
+    - cron: '0 0 * * *'    # 7PM ET (UTC-5)
+  workflow_dispatch:        # manual trigger from GitHub UI
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node bouquet.mjs
