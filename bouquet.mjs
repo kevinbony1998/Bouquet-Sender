@@ -7,7 +7,7 @@ const TWILIO_FROM        = "whatsapp:+14155238886";
 const TWILIO_TO          = process.env.TWILIO_TO;
 const SERVER_URL         = process.env.SERVER_URL;
 
-const DEFAULT_MESSAGE    = "Hey, Sreelu! Remember to eat on time!";
+const DEFAULT_MESSAGE    = "Remember to eat on time!";
 
 function generateShortId(length = 8) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
