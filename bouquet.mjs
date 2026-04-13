@@ -16,7 +16,7 @@ function randomInt(min, max) {
 function pickFlowers() {
   const pool = [];
   for (let id = 1; id <= 12; id++) {
-    const weight = (id === 2 || id === 5) ? 3 : 1;
+    const weight = (id === 2 || id === 5) ? 1.5 : 1;
     for (let i = 0; i < weight; i++) pool.push(id);
   }
   const id = pool[Math.floor(Math.random() * pool.length)];
