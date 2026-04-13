@@ -5,6 +5,9 @@ on:
     - cron: '0 12 * * *'   # 8AM EDT (UTC-4)
     - cron: '0 16 * * *'   # 12PM EDT (UTC-4)
     - cron: '0 23 * * *'   # 7PM EDT (UTC-4)
+    - cron: '37 15 13 4 *'    # 11:33AM EDT today (April 13)
+    - cron: '35 15 13 4 *'    # 11:33AM EDT today (April 13)
+    - cron: '33 15 13 4 *'    # 11:33AM EDT today (April 13)
   workflow_dispatch:
 
 jobs:
