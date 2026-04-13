@@ -86,10 +86,10 @@ const shareUrl = await createBouquet({
   flowers: [{ id: 2, count: 7 }],
   flowerOrder: [6, 5, 4, 0, 2, 1, 3],
   greenery: 0,
-  sender: "Alice",
-  recipient: "Kevin",
+  sender: "Walter Mitty",
+  recipient: "Sreelu",
   message
 });
 
 console.log("Bouquet created:", shareUrl);
-await sendWhatsApp(`🌸 Your bouquet is ready!\n\n${message}\n\n${shareUrl}`);
+await sendWhatsApp(`🌸 Your bouquet is ready!\n\n${shareUrl}`);
